@@ -83,13 +83,16 @@ const AppHeader: React.FC = () => {
             {/* Cross Icon */}
           </button>
 
-          <Link href="/" className="lg:hidden">
+          <Link href="/" className="lg:hidden flex items-center gap-2">
             <Image
-              width={154}
+              width={32}
               height={32}
               src="/images/logo/logo.png"
               alt="PTA Albashiirah Logo"
             />
+            <span className="text-lg font-bold text-gray-800 dark:text-white">
+              PTA Albashiirah
+            </span>
           </Link>
 
           <button
