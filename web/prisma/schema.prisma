@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  IKHWAN
+  AKHWAT
+}
+
+enum Role {
+  MUDIR
+  GURU_DIINIYYAH
+  PENGAMPU_TAHFIDZ
+  MUSYRIF
+  TU
+  KESANTRIAN
+  ADMIN // System admin
+}
+
+enum Semester {
+  ODD
+  EVEN
+}
+
+enum ExamType {
+  TAHFIDZ
+  DIINIYYAH
+  PRAKTEK
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  niy       String   @unique
+  email     String?  @unique
+  password  String
+  fullName  String
+  gender    Gender
+  role      Role     @default(GURU_DIINIYYAH)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  homeroomClasses Class[] // Classes where this user is Walikelas
+  halaqahs        Halaqah[] // Halaqahs taught by this user
+  examSessions    ExamSession[] // Exams conducted by this user
+  scoresGiven     TahfidzScore[] // Scores given by this user
+}
+
+model AcademicYear {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // e.g. "2025/2026"
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  classes Class[]
+  exams   Exam[]
+}
+
+model Class {
+  id             Int          @id @default(autoincrement())
+  name           String // e.g. "7A"
+  level          Int // 7, 8, 9
+  academicYearId Int
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  walikelasId    Int?
+  walikelas      User?        @relation(fields: [walikelasId], references: [id])
+  students       Student[]
+
+  @@unique([name, academicYearId])
+}
+
+model Halaqah {
+  id        Int       @id @default(autoincrement())
+  name      String
+  teacherId Int
+  teacher   User      @relation(fields: [teacherId], references: [id])
+  students  Student[]
+}
+
+model Student {
+  id          Int      @id @default(autoincrement())
+  nis         String   @unique
+  nisn        String?
+  name        String
+  gender      Gender
+  placeOfBirth String?
+  dateOfBirth DateTime?
+  fatherName  String?
+  motherName  String?
+  parentPhone String?
+  address     String?
+  
+  classId     Int
+  class       Class    @relation(fields: [classId], references: [id])
+  
+  halaqahId   Int?
+  halaqah     Halaqah? @relation(fields: [halaqahId], references: [id])
+
+  tahfidzScores TahfidzScore[]
+}
+
+model Exam {
+  id             Int          @id @default(autoincrement())
+  title          String // e.g. "UAS Semester I"
+  type           ExamType
+  semester       Semester
+  academicYearId Int
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  
+  sessions       ExamSession[]
+  scores         TahfidzScore[]
+}
+
+model ExamSession {
+  id        Int      @id @default(autoincrement())
+  examId    Int
+  exam      Exam     @relation(fields: [examId], references: [id])
+  examinerId Int
+  examiner  User     @relation(fields: [examinerId], references: [id])
+  
+  // Optional: Link to specific class or halaqah if the session is scoped
+  classId   Int?
+  halaqahId Int?
+}
+
+model TahfidzScore {
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  student      Student  @relation(fields: [studentId], references: [id])
+  examId       Int
+  exam         Exam     @relation(fields: [examId], references: [id])
+  examinerId   Int
+  examiner     User     @relation(fields: [examinerId], references: [id])
+  
+  juz          Int
+  surahStart   String
+  ayatStart    Int
+  surahEnd     String
+  ayatEnd      Int
+  
+  // Scores for 5 questions
+  question1    Int
+  question2    Int
+  question3    Int
+  question4    Int
+  question5    Int
+  
+  finalScore   Float
+  isRemedial   Boolean @default(false)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
