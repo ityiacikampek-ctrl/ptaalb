@@ -12,15 +12,17 @@ interface StudentFormProps {
 export default function StudentForm({ initialData, onClose }: StudentFormProps) {
     const [formData, setFormData] = useState({
         nis: "",
-        nsin: "",
-        fullName: "",
+        nisn: "",
+        name: "",
         gender: "IKHWAN" as Gender,
-        birthPlace: "",
-        birthDate: "",
+        placeOfBirth: "",
+        dateOfBirth: "",
         address: "",
         fatherName: "",
         motherName: "",
         parentPhone: "",
+        classId: 0, // Default to 0 or handle selection
+        halaqahId: 0, // Default to 0 or handle selection
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -29,15 +31,17 @@ export default function StudentForm({ initialData, onClose }: StudentFormProps) 
         if (initialData) {
             setFormData({
                 nis: initialData.nis,
-                nsin: initialData.nsin || "",
-                fullName: initialData.fullName,
+                nisn: initialData.nisn || "",
+                name: initialData.name,
                 gender: initialData.gender,
-                birthPlace: initialData.birthPlace || "",
-                birthDate: initialData.birthDate ? new Date(initialData.birthDate).toISOString().split("T")[0] : "",
+                placeOfBirth: initialData.placeOfBirth || "",
+                dateOfBirth: initialData.dateOfBirth ? new Date(initialData.dateOfBirth).toISOString().split("T")[0] : "",
                 address: initialData.address || "",
                 fatherName: initialData.fatherName || "",
                 motherName: initialData.motherName || "",
                 parentPhone: initialData.parentPhone || "",
+                classId: initialData.classId,
+                halaqahId: initialData.halaqahId || 0,
             });
         }
     }, [initialData]);
@@ -54,7 +58,9 @@ export default function StudentForm({ initialData, onClose }: StudentFormProps) 
         try {
             const dataToSubmit = {
                 ...formData,
-                birthDate: formData.birthDate ? new Date(formData.birthDate) : undefined,
+                dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
+                classId: Number(formData.classId), // Ensure number
+                halaqahId: formData.halaqahId ? Number(formData.halaqahId) : undefined,
             };
 
             let result;
@@ -102,28 +108,28 @@ export default function StudentForm({ initialData, onClose }: StudentFormProps) 
 
                         <div className="mb-4">
                             <label className="mb-2.5 block font-medium text-black dark:text-white">
-                                NSIn (Optional)
+                                NISN (Optional)
                             </label>
                             <input
                                 type="text"
-                                name="nsin"
-                                value={formData.nsin}
+                                name="nisn"
+                                value={formData.nisn}
                                 onChange={handleChange}
-                                placeholder="Enter NSIn"
+                                placeholder="Enter NISN"
                                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                             />
                         </div>
 
                         <div className="mb-4">
                             <label className="mb-2.5 block font-medium text-black dark:text-white">
-                                Full Name
+                                Name
                             </label>
                             <input
                                 type="text"
-                                name="fullName"
-                                value={formData.fullName}
+                                name="name"
+                                value={formData.name}
                                 onChange={handleChange}
-                                placeholder="Enter full name"
+                                placeholder="Enter name"
                                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                                 required
                             />
@@ -150,8 +156,8 @@ export default function StudentForm({ initialData, onClose }: StudentFormProps) 
                             </label>
                             <input
                                 type="text"
-                                name="birthPlace"
-                                value={formData.birthPlace}
+                                name="placeOfBirth"
+                                value={formData.placeOfBirth}
                                 onChange={handleChange}
                                 placeholder="Enter place of birth"
                                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -164,8 +170,8 @@ export default function StudentForm({ initialData, onClose }: StudentFormProps) 
                             </label>
                             <input
                                 type="date"
-                                name="birthDate"
-                                value={formData.birthDate}
+                                name="dateOfBirth"
+                                value={formData.dateOfBirth}
                                 onChange={handleChange}
                                 className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                             />

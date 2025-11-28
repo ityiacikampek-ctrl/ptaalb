@@ -1,30 +1,33 @@
 "use client";
 
 import React, { useState } from "react";
-import { Student } from "@prisma/client";
-import StudentTable from "./StudentTable";
-import StudentForm from "./StudentForm";
+import { Class, User } from "@prisma/client";
+import ClassTable from "./ClassTable";
+import ClassForm from "./ClassForm";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 
-interface StudentWithRelations extends Student {
-    class?: { name: string } | null;
-    halaqah?: { name: string } | null;
+interface ClassWithRelations extends Class {
+    walikelas: User | null;
+    _count: {
+        students: number;
+    };
 }
 
-interface StudentClientProps {
-    students: StudentWithRelations[];
+interface ClassClientProps {
+    classes: ClassWithRelations[];
+    teachers: User[];
 }
 
-export default function StudentClient({ students }: StudentClientProps) {
+export default function ClassClient({ classes, teachers }: ClassClientProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<StudentWithRelations | null>(null);
+    const [editingItem, setEditingItem] = useState<ClassWithRelations | null>(null);
 
     const handleAdd = () => {
         setEditingItem(null);
         setIsModalOpen(true);
     };
 
-    const handleEdit = (item: StudentWithRelations) => {
+    const handleEdit = (item: ClassWithRelations) => {
         setEditingItem(item);
         setIsModalOpen(true);
     };
@@ -36,7 +39,7 @@ export default function StudentClient({ students }: StudentClientProps) {
 
     return (
         <>
-            <PageBreadcrumb pageTitle="Students (Santri)" />
+            <PageBreadcrumb pageTitle="Classes" />
 
             <div className="flex flex-col gap-10">
                 <div className="flex justify-end">
@@ -44,14 +47,18 @@ export default function StudentClient({ students }: StudentClientProps) {
                         onClick={handleAdd}
                         className="inline-flex items-center justify-center rounded-lg bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
                     >
-                        Add Student
+                        Add Class
                     </button>
                 </div>
 
-                <StudentTable students={students} onEdit={handleEdit} />
+                <ClassTable classes={classes} onEdit={handleEdit} />
 
                 {isModalOpen && (
-                    <StudentForm initialData={editingItem} onClose={handleClose} />
+                    <ClassForm
+                        initialData={editingItem}
+                        teachers={teachers}
+                        onClose={handleClose}
+                    />
                 )}
             </div>
         </>

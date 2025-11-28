@@ -13,11 +13,24 @@ export const metadata: Metadata = {
   description: "Sistem Informasi Manajemen PTA Albashiirah",
 };
 
-export default function Ecommerce() {
+import { getDashboardStats } from "@/actions/dashboard";
+
+export default async function Ecommerce() {
+  const { data: stats } = await getDashboardStats();
+
   return (
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <div className="col-span-12 space-y-6 xl:col-span-7">
-        <EcommerceMetrics />
+        <EcommerceMetrics
+          stats={
+            stats || {
+              studentCount: 0,
+              teacherCount: 0,
+              classCount: 0,
+              activeYear: "-",
+            }
+          }
+        />
 
         <MonthlySalesChart />
       </div>

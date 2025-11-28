@@ -16,30 +16,6 @@ export async function getStudents() {
         });
         return { success: true, data: students };
     } catch (error) {
-        console.error("Error fetching students:", error);
-        return { success: false, error: "Failed to fetch students" };
-    }
-}
-
-export async function createStudent(data: {
-    nis: string;
-    nsin?: string;
-    fullName: string;
-    gender: Gender;
-    birthPlace?: string;
-    birthDate?: Date;
-    address?: string;
-    fatherName?: string;
-    motherName?: string;
-    parentPhone?: string;
-    classId?: number;
-    halaqahId?: number;
-}) {
-    try {
-        const existingNis = await prisma.student.findUnique({
-            where: { nis: data.nis },
-        });
-
         if (existingNis) {
             return { success: false, error: "NIS already exists" };
         }
